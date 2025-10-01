@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="We propose General Policy Composition (GPC), a training-free method that enhances performance by combining the distributional scores of multiple pre-trained policies via a convex combination and test-time search. GPC is versatile, allowing for the plug-and-play composition of heterogeneous policies, including VA and VLA models, as well as those based on diffusion or flow-matching, irrespective of their input visual modalities.">   <!-- TODO: Meta Description -->
+  <meta name="keywords" content="GPC, General Policy Composition, Training-free, Manipulation"> <!-- TODO: Keywords -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>General Policy Composition</title> <!-- TODO: Website Title -->
+
+  <!-- For Google Analytical. It's optional! -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id="></script> -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', ''); // Optional: Fill id to ''.
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/custom.css">
+  <link rel="icon" href="./static/images/favicon.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="static/js/full_screen_video.js"></script>
+  <script src="static/js/auto_resize_first_page_text.js"></script>
+  <script src="static/js/open_in_new_tab.js"></script>
+</head>
+<body>
+
+
+<div class="hero2">
+  <video autoplay loop muted playsinline class="hero2-video">
+    <source src="static/videos/full_screen.mp4" type="video/mp4">
+  </video>
+
+  <div class="hero2-overlay"></div>
+
+  <div class="hero2-text">
+    <h1 class="hero2-title"><span class="color-F">G</span>eneral <span class="color-C">P</span>olicy <span class="color-E">C</span>omposition</h1>
+    <h2 class="hero2-subtitle">
+      Improving Diffusion-based or Flow-based Robot Policies <br>via Test-time Distribution-level Composition
+    </h2>
+  </div>
+</div>
+
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+</nav>
+
+<!-- TODO: Paper Info -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            Compose Your Policies!
+            <br>
+            <span class="is-size-2">
+              Improving Diffusion-based or Flow-based Robot Policies via Test-time Distribution-level Composition
+            </span>
+          </h1>          
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://sagecao1125.github.io/">Jiahang Cao</a><sup>*1,2,3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~Yize_Huang1">Yize Huang</a><sup>*1,4</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=q3x6KsgAAAAJ">Hanzhong Guo</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~Rui_Zhang27">Rui Zhang</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~Mu_Nan2">Mu Nan</a><sup>1</sup>,
+            </span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=6nUpVxIAAAAJ&hl">Weijian Mai</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=DjQT_G0AAAAJ">Jiaxu Wang</a><sup>5</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://chaducheng.github.io/">Hao Cheng</a><sup>5</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~Jingkai_SUN1">Jingkai Sun</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~Gang_Han1">Gang Han</a><sup>2</sup>,
+            </span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~Wen_Zhao2">Wen Zhao</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://github.com/jonyzhang2023">Qiang Zhang</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~Yijie_Guo3">Yijie Guo</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=jrX2FekAAAAJ">Qihao Zheng</a><sup>3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://cf-song.github.io/">Chunfeng Song</a><sup>3</sup>,
+            </span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=dGZ3vH8AAAAJ">Xiao Li</a><sup>4</sup>,
+            </span>
+            <span class="author-block">
+              <a href="http://luoping.me/">Ping Luo</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://andrewluo.net/">Andrew F. Luo </a><sup>1\( \ddagger \)</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>The University of Hong Kong &nbsp;</span>
+            <span class="author-block"><sup>2</sup>Beijing Innovation Center of Humanoid Robotics &nbsp;</span>
+            <span class="author-block"><sup>3</sup>Shanghai AI Lab</span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>4</sup>Shanghai Jiaotong University &nbsp;</span>
+            <span class="author-block"><sup>5</sup>The Hong Kong University of Science and Technology</span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>*</sup>Equal contribution &nbsp;</span>
+            <span class="author-block"><sup>\(\ddagger\)</sup>Corresponding Author</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://github.com/SageCao1125/GPC-Site/files/GPC_paper.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/SageCao1125/GPC-Site"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/SageCao1125/GPC"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <!--TODO: Abstract-->
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          Diffusion-based models for robotic control, including vision-language-action (VLA) and vision-action (VA) policies, have demonstrated significant capabilities. Yet their advancement is constrained by the high cost of acquiring large-scale interaction datasets. 
+          This work introduces an alternative paradigm for enhancing policy performance <strong>without additional model training</strong>. 
+          Perhaps surprisingly, we demonstrate that the composed policies can exceed the performance of either parent policy. 
+          <span style="display: block; margin-left: 0px;"></span> Our contribution is threefold: 
+          <span style="display: block; margin-left: 0px;"></span><strong>(I)</strong> First, we establish a theoretical foundation showing that the convex composition of distributional scores from multiple diffusion models can yield a superior one-step functional objective compared to any individual score. 
+          A Grönwall-type bound is then used to show that this single-step improvement propagates through entire generation trajectories, leading to systemic performance gains. 
+          <span style="display: block; margin-left: 0px;"></span><strong>(II)</strong> Second, motivated by these results, we propose <strong>General Policy Composition (GPC)</strong>, a training-free method that enhances performance by combining the distributional scores of multiple pre-trained policies via a convex combination and test-time search. 
+          GPC is versatile, allowing for the plug-and-play composition of heterogeneous policies, including VA and VLA models, as well as those based on diffusion or flow-matching, irrespective of their input visual modalities. 
+          <span style="display: block; margin-left: 0px;"></span><strong>(III)</strong> Third, we provide extensive empirical validation. Experiments on Robomimic, PushT, and RoboTwin benchmarks, alongside real-world robotic evaluations, confirm that GPC consistently improves performance and adaptability across a diverse set of tasks. 
+          Further analysis of alternative composition operators and weighting strategies offers insights into the mechanisms underlying the success of GPC. These results establish GPC as a simple yet effective method for improving control performance by leveraging existing policies.
+        </div>
+      </div>
+    </div>
+
+
+    <!-- TODO: Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Summary Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+<!-- Motivation. -->
+<section class="section">  
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Motivation</h2>
+        <div class="is-vcentered">
+          <video
+            src="./static/videos/motivations.mp4"
+            autoplay
+            loop
+            muted
+            playsinline
+            style="max-width: 100%; border-radius: 6px;">
+          </video>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            <strong>Motivation Illustration: </strong>VLA and VA policies are powerful but rely on costly large-scale training.
+            Theoretically, we show that combining distributional scores of pre-trained policies can yield a single-step error drop that propagates stably along the overall trajectory, 
+            enabling General Policy Composition (GPC) --- a <strong><em>training-free</em></strong> method to boost policy performance via <strong><em>convex combination</em></strong>.
+            GPC is versatile, allowing for the <strong><em>plug-and-play</em></strong> composition of heterogeneous policies, including VA and VLA models, as well as those based on diffusion or flow-matching, irrespective
+            of their input visual modalities. 
+          </p>
+        </div>
+    </div>
+    <!--/ Motivation. -->
+  </div>
+</section>
+
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+
+        <!-- Main title -->
+        <h2 class="title is-3">Mathematical Foundation</h2>
+
+        <!-- ----------- Sub-section 1 ----------- -->
+        <h3 class="title is-4">Overview</h3>
+        <div class="is-vcentered has-text-centered">
+          <img src="./static/images/math_overview_svg.png"
+               alt="Overview of GPC"
+               style="max-width: 110%; margin: 0 auto;">
+        </div>
+        <p class="content has-text-justified">
+          cOverview of Mathematics Foundation: </strong> We provide a high-level description of the math foundation of General Policy Composition framework,
+          outlining how function-level (single step improvement) and system-level (overall trajectory improvement) analyses together motivate our approach.
+        </p>
+
+        <!-- ----------- Sub-section 2 ----------- -->
+        <h3 class="title is-4">Proposition 1: Function-level Single-step Improvement</h3>
+        <div class="is-vcentered has-text-centered">
+          <img src="./static/images/math_prop1.png"
+               alt="Function-level Proposition 1"
+               style="max-width: 87%; margin: 0 auto;">
+        </div>
+        <p class="content has-text-justified">
+          <strong>Proposition 1</strong> establishes that a proper <em>convex combination of distributional scores</em>
+          can yield a smaller single-step error than either individual score estimator.
+        </p>
+
+        <!-- ----------- Sub-section 3 ----------- -->
+        <h3 class="title is-4">Proposition 2: System-level Stability</h3>
+        <div class="is-vcentered has-text-centered">
+          <img src="./static/images/math_prop2.png"
+               alt="System-level Proposition 2 and Corollary"
+               style="max-width: 90%; margin: 0 auto;">
+        </div>
+        <p class="content has-text-justified">
+          <strong>Proposition 2</strong> leverages a Grönwall-type inequality to show that
+          the terminal error grows at most exponentially with the Lipschitz constants, and is directly bounded by the integrated score error.
+        </p>
+
+        <h3 class="title is-4">Corollary: Tighter Terminal-state Bound</h3>
+        <div class="is-vcentered has-text-centered">
+          <img src="./static/images/math_coro1.png"
+               alt="Corollary Figure"
+               style="max-width: 86%; margin: 0 auto;">
+        </div>
+        <p class="content has-text-justified">
+          <strong>Corollary 1.</strong> Once functional-level improvement is established by obtaining an optimal weight (Prop. 4.1), 
+          stability ensures this advantage propagates along the trajectory (Prop. 4.2), 
+          making convex score composition provably <em>superior</em> to relying on individual scores.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Method. -->
+<section class="section">  
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+
+        <!-- Overview. -->
+        <h3 class="title is-4">Overview</h3>
+        <div class="is-vcentered">
+          <img src="./static/images/pipeline.png"
+                alt="Overview of TactAR and RDP"
+                style="max-width: 99%; margin: 0 auto;">
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            <strong>Overview of our proposed General Policy Composition.</strong> Combining distributional scores from pre-trained diffusion-based or flow-based policies on different conditions (e.g., visual modalities and network backbones), 
+            GPC can generate expressive and adaptable action trajectories through convex score combination <em>without additional training.</em>
+          </p>
+        </div>
+        <!--/ Overview. -->
+      </div>
+    </div>
+    <!--/ Method. -->
+  </div>
+</section>
+
+<!-- Experiments. -->
+<section class="section">  
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Experiments</h2>
+
+        <!-- Main Results. -->
+        <h3 class="title is-4">Main Results</h3>
+        <!-- Peeling. -->
+        <h4 class="title is-5" id="peeling experiments">Task: Robomimic and PushT</h4>
+        <div class="content has-text-justified">
+          <p>
+            <b>Experiemnt Settings:</b>
+            There are two variations and we run 200 trials for each variation:
+            <span style="display: block; margin-left: 20px;">(1) Base Diffusion-based and Flow-based Policies (e.g., DP, Flow Policy, Pi-0). 
+            The policies are pre-trained based on their original codebase.</span>
+            <span style="display: block; margin-left: 20px;">(2) Composed Policies via GPC.
+            Composed policies are combined via GPC during test-time. </span>
+          </p>
+          <p>
+            <b>Score Metric:</b>
+            We calculate the average success rate.
+          </p>
+        </div> 
+        <div class="columns is-centered">
+          <div class="column is-four-fifths">
+            <div class="table-container">
+              <p class="has-text-centered">
+                <strong>TABLE I: Experiment results on Robomimic and PushT.</strong><br>
+                The table shows the success rate ↑. Our GPC yields a noticeable average improvement compared with the base policies.
+              </p>
+        
+              <table class="table is-fullwidth is-bordered is-striped is-hoverable">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Generative&nbsp;Mode</th>
+                    <th>Model&nbsp;Type</th>
+                    <th colspan="3" class="has-text-centered">Robomimic</th>
+                    <th class="has-text-centered">PushT</th>
+                    <th class="has-text-centered">Average</th>
+                  </tr>
+                  <tr>
+                    <th></th><th></th><th></th>
+                    <th class="has-text-centered">Can</th>
+                    <th class="has-text-centered">Lift</th>
+                    <th class="has-text-centered">Square</th>
+                    <th class="has-text-centered">PushT</th>
+                    <th class="has-text-centered">Avg.</th>
+                  </tr>
+                </thead>
+        
+                <tbody>
+                  <!-- -------- Base Policies -------- -->
+                  <tr class="has-text-centered has-background-light">
+                    <td colspan="8"><em>Base Policies</em></td>
+                  </tr>
+                  <tr>
+                    <td>Diffusion Policy (DP)</td><td>Diffusion</td><td>VA</td>
+                    <td class="has-text-centered">34.50</td>
+                    <td class="has-text-centered">98.50</td>
+                    <td class="has-text-centered">2.00</td>
+                    <td class="has-text-centered">21.75</td>
+                    <td class="has-text-centered">39.19</td>
+                  </tr>
+                  <tr>
+                    <td>Mamba Policy (MP)</td><td>Diffusion</td><td>VA</td>
+                    <td class="has-text-centered">5.00</td>
+                    <td class="has-text-centered">98.50</td>
+                    <td class="has-text-centered">3.00</td>
+                    <td class="has-text-centered">12.06</td>
+                    <td class="has-text-centered">29.64</td>
+                  </tr>
+                  <tr>
+                    <td>Flow Policy (FP)</td><td>Flow&nbsp;Matching</td><td>VA</td>
+                    <td class="has-text-centered">95.00</td>
+                    <td class="has-text-centered">13.00</td>
+                    <td class="has-text-centered">77.50</td>
+                    <td class="has-text-centered">54.25</td>
+                    <td class="has-text-centered">59.94</td>
+                  </tr>
+                  <tr>
+                    <td>Florence&nbsp;Policy-D</td><td>Diffusion</td><td>VLA</td>
+                    <td class="has-text-centered">61.50</td>
+                    <td class="has-text-centered">97.00</td>
+                    <td class="has-text-centered">46.50</td>
+                    <td class="has-text-centered">40.00</td>
+                    <td class="has-text-centered">61.25</td>
+                  </tr>
+                  <tr>
+                    <td>Florence&nbsp;Policy-F</td><td>Flow&nbsp;Matching</td><td>VLA</td>
+                    <td class="has-text-centered">89.00</td>
+                    <td class="has-text-centered">98.50</td>
+                    <td class="has-text-centered">88.50</td>
+                    <td class="has-text-centered">39.38</td>
+                    <td class="has-text-centered">78.84</td>
+                  </tr>
+                  <tr>
+                    <td>π0</td><td>Flow&nbsp;Matching</td><td>VLA</td>
+                    <td class="has-text-centered">96.50</td>
+                    <td class="has-text-centered">99.00</td>
+                    <td class="has-text-centered">92.50</td>
+                    <td class="has-text-centered">57.69</td>
+                    <td class="has-text-centered">86.42</td>
+                  </tr>
+        
+                  <!-- -------- Composed Policies -------- -->
+                  <tr class="has-text-centered has-background-light">
+                    <td colspan="8"><em>Composed Policies via Convex Score Combination</em></td>
+                  </tr>
+                  <tr>
+                    <td>DP + MP</td><td>Diffusion</td><td>VA&nbsp;&amp;&nbsp;VA</td>
+                    <td class="has-text-centered">34.50</td>
+                    <td class="has-text-centered">99.50</td>
+                    <td class="has-text-centered">8.00</td>
+                    <td class="has-text-centered">23.63</td>
+                    <td class="has-text-centered">41.41 <small><b style="color:#e67e22">(+2.22%)</b></small></td>
+                  </tr>
+                  <tr>
+                    <td>Florence-Policy-D + DP</td><td>Diffusion</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td class="has-text-centered">62.50</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>100.00</b></td>
+                    <td class="has-text-centered">61.50</td>
+                    <td class="has-text-centered">43.06</td>
+                    <td class="has-text-centered">66.76 <small><b style="color:#e67e22">(+5.51%)</b></small></td>
+                  </tr>
+                  <tr>
+                    <td>Florence-Policy-D + MP</td><td>Diffusion</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td class="has-text-centered">63.00</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>100.00</b></td>
+                    <td class="has-text-centered">54.50</td>
+                    <td class="has-text-centered">40.88</td>
+                    <td class="has-text-centered">64.60 <small><b style="color:#e67e22">(+3.35%)</b></small></td>
+                  </tr>
+                  <tr>
+                    <td>Florence-Policy-F + FP</td><td>Flow&nbsp;Matching</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td class="has-text-centered">98.50</td>
+                    <td class="has-text-centered">98.50</td>
+                    <td class="has-text-centered">92.50</td>
+                    <td class="has-text-centered">56.06</td>
+                    <td class="has-text-centered">86.39 <small><b style="color:#e67e22">(+7.55%)</b></small></td>
+                  </tr>
+                  <tr>
+                    <td>π0 + FP</td><td>Flow&nbsp;Matching</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>99.50</b></td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>100.00</b></td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>94.00</b></td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>62.25</b></td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>88.94</b> <small><b style="color:#e67e22">(+2.52%)</b></small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="title is-5" id="peeling experiments">Task: RoboTwin 2.0</h4>
+        <div class="content has-text-justified">
+          <p>
+            <b>Experiemnt Settings:</b>
+            There are two variations and we run 100 trials for each variation:
+            <span style="display: block; margin-left: 20px;">(1) Base Diffusion-based Policies (e.g., DP, DP3, RDT). </span>
+            <span style="display: block; margin-left: 20px;">(2) Composed Policies via GPC. </span>
+          </p>
+          <p>
+            <b>Score Metric:</b>
+            We calculate the average success rate.
+          </p>
+        </div>
+
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column is-full-width">
+              <div class="table-container" style="overflow-x:auto;">
+                
+                <!-- Caption -->
+                <p class="has-text-centered">
+                  <strong>Table II: Experiment results on RoboTwin with 6 diverse bimanual manipulation tasks.</strong><br>
+                  GPC achieves an obvious increase with up to 7% improvement on the success rate.
+                </p>
+      
+                <table class="table is-bordered is-striped is-hoverable is-narrow">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>Model&nbsp;Type</th>
+                      <th class="has-text-centered">Hanging&nbsp;Mug</th>
+                      <th class="has-text-centered">Open&nbsp;Laptop</th>
+                      <th class="has-text-centered">Place&nbsp;Burger&nbsp;Fries</th>
+                      <th class="has-text-centered">Put&nbsp;Object&nbsp;Cabinet</th>
+                      <th class="has-text-centered">Stack&nbsp;Bowls&nbsp;Three</th>
+                      <th class="has-text-centered">Turn&nbsp;Switch</th>
+                      <th class="has-text-centered">Average</th>
+                    </tr>
+                  </thead>
+      
+                  <tbody>
+                    <!-- Base Policies -->
+                    <tr class="has-background-light">
+                      <td colspan="9" class="has-text-centered"><em>Base Policies</em></td>
+                    </tr>
+                    <tr>
+                      <td>DP<sub>img</sub></td><td>VA</td>
+                      <td class="has-text-centered">0.10</td>
+                      <td class="has-text-centered">0.74</td>
+                      <td class="has-text-centered">0.49</td>
+                      <td class="has-text-centered">0.56</td>
+                      <td class="has-text-centered">0.52</td>
+                      <td class="has-text-centered">0.38</td>
+                      <td class="has-text-centered">0.46</td>
+                    </tr>
+                    <tr>
+                      <td>DP<sub>pcd</sub></td><td>VA</td>
+                      <td class="has-text-centered">0.21</td>
+                      <td class="has-text-centered">0.93</td>
+                      <td class="has-text-centered">0.72</td>
+                      <td class="has-text-centered">0.71</td>
+                      <td class="has-text-centered">0.64</td>
+                      <td class="has-text-centered">0.71</td>
+                      <td class="has-text-centered">0.65</td>
+                    </tr>
+                    <tr>
+                      <td>RDT</td><td>VLA</td>
+                      <td class="has-text-centered">0.13</td>
+                      <td class="has-text-centered">0.69</td>
+                      <td class="has-text-centered">0.46</td>
+                      <td class="has-text-centered">0.32</td>
+                      <td class="has-text-centered">0.47</td>
+                      <td class="has-text-centered">0.30</td>
+                      <td class="has-text-centered">0.40</td>
+                    </tr>
+      
+                    <!-- Composed Policies -->
+                    <tr class="has-background-light">
+                      <td colspan="9" class="has-text-centered"><em>Composed Policies via Convex Score Combination</em></td>
+                    </tr>
+                    <tr>
+                      <td>DP<sub>img</sub> + DP<sub>pcd</sub></td><td>VA &amp; VA</td>
+                      <td class="has-text-centered">0.23</td>
+                      <td class="has-text-centered">0.93</td>
+                      <td class="has-text-centered">0.78</td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.82</b></td>
+                      <td class="has-text-centered">0.71</td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.71</b></td>
+                      <td class="has-text-centered">0.70 <small><b style="color:#e67e22">(+5%)</b></small></td>
+                    </tr>
+                    <tr>
+                      <td>RDT + DP<sub>img</sub></td><td>VLA &amp; VA</td>
+                      <td class="has-text-centered">0.18</td>
+                      <td class="has-text-centered">0.80</td>
+                      <td class="has-text-centered">0.57</td>
+                      <td class="has-text-centered">0.59</td>
+                      <td class="has-text-centered">0.66</td>
+                      <td class="has-text-centered">0.38</td>
+                      <td class="has-text-centered">0.53 <small><b style="color:#e67e22">(+7%)</b></small></td>
+                    </tr>
+                    <tr>
+                      <td>RDT + DP<sub>pcd</sub></td><td>VLA &amp; VA</td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.36</b></td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.94</b></td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.83</b></td>
+                      <td class="has-text-centered">0.78</td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.73</b></td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.71</b></td>
+                      <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.72</b> <small><b style="color:#e67e22">(+7%)</b></small></td>
+                    </tr>
+                  </tbody>
+                </table>
+      
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        
+
+
+          <!-- Visualization of the Real World Experiment. -->
+        <h3 class="title is-4">Visualization of Real World Experiments.</h3>
+
+        <div class="content has-text-justified">
+          <p>
+            <b>Experiemnt Settings:</b>
+            There are two variations and we run 20 trials for each policy for evaluation:
+            <span style="display: block; margin-left: 20px;">(1) Base Diffusion-based Policies (e.g., DP, DP3). </span>
+            <span style="display: block; margin-left: 20px;">(2) Composed Policies via GPC. </span>
+          </p>
+        </div> 
+        <h4 class="title is-5" id="peeling experiments">Task: Clean Table</h4>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/clean_table_dp-5_fail-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP3 fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/clean_table_dp3-5_fail-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/clean_table_gpc-5_success-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="title is-5" id="peeling experiments">Task: Place Bottles</h4>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/place_dp_p3-1_fail.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP3 succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/place_dp3_p3-1_success.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/place_gpc_p3-1_success.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="title is-5" id="peeling experiments">Task: Hang Mug</h4>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/hang_dp-4_success-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP3 fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/hang_dp3-4_fail-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/hang_gpc-4_success-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="title is-5" id="peeling experiments">Task: Punch Holes</h4>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/punch_dp-2_fail-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP3 fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/punch_dp3-2_fail-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/exp_real_world/punch_gpc-2_success-1.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        </br>
+        <!-- Influence of Weight Configurations on GPC Performance-->
+        <h3 class="title is-4">Influence of Weight Configurations on GPC Performance</h3>
+        <div class="content has-text-justified">
+          <p>
+            To analyse how do different weight configurations influence the performance of GPC across various scenarios, we evaluate GPC performance across multiple tasks 
+            under different weight configurations as follows.
+          </p>
+        </div>
+
+        <div class="columns is-centered">
+          <div class="column is-full-width">
+            <div class="table-container">
+        
+              <!-- Caption -->
+              <p class="has-text-centered">
+                <strong>Table III: Experiment results of our method under different composition configurations.</strong><br>
+                These results highlight GPC's versatility and the importance of weight tuning across policies.
+              </p>
+        
+              <table class="table is-fullwidth is-bordered is-striped is-hoverable is-narrow">
+                <thead>
+                  <tr>
+                    <th rowspan="2">Scenario</th>
+                    <th rowspan="2">Task</th>
+                    <th rowspan="2">DP<sub>img</sub></th>
+                    <th rowspan="2">DP<sub>pcd</sub></th>
+                    <th colspan="9" class="has-text-centered">Weight Scheduling in&nbsp;GPC&nbsp;(weight&nbsp;of&nbsp;DP<sub>img</sub>)</th>
+                    <th rowspan="2">Δ</th>
+                  </tr>
+                  <tr>
+                    <th class="has-text-centered">0.1*</th>
+                    <th class="has-text-centered">0.2</th>
+                    <th class="has-text-centered">0.3</th>
+                    <th class="has-text-centered">0.4</th>
+                    <th class="has-text-centered">0.5</th>
+                    <th class="has-text-centered">0.6</th>
+                    <th class="has-text-centered">0.7</th>
+                    <th class="has-text-centered">0.8</th>
+                    <th class="has-text-centered">0.9</th>
+                  </tr>
+                </thead>
+        
+                <tbody>
+                  <!-- Group 1: Both Policies Perform Well -->
+                  <tr>
+                    <td rowspan="3"><em>Both&nbsp;Policies<br>Perform&nbsp;Well</em></td>
+                    <td>Empty&nbsp;Cup&nbsp;Place</td>
+                    <td class="has-text-centered">0.42</td>
+                    <td class="has-text-centered">0.62</td>
+                    <td class="has-text-centered">0.70</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.86</b></td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.84</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.86</b></td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.84</td>
+                    <td class="has-text-centered">0.84</td>
+                    <td class="has-text-centered">0.76</td>
+                    <td class="has-text-centered">0.68</td>
+                    <td class="has-text-centered">0.61</td>
+                    <td class="has-text-centered"><b style="color:#e67e22">+24%</b></td>
+                  </tr>
+                  <tr>
+                    <td>Dual&nbsp;Bottles&nbsp;Pick&nbsp;(Hard)</td>
+                    <td class="has-text-centered">0.49</td>
+                    <td class="has-text-centered">0.64</td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.69</td>
+                    <td class="has-text-centered">0.63</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.71</b></td>
+                    <td class="has-text-centered">0.66</td>
+                    <td class="has-text-centered">0.64</td>
+                    <td class="has-text-centered">0.65</td>
+                    <td class="has-text-centered">0.63</td>
+                    <td class="has-text-centered">0.56</td>
+                    <td class="has-text-centered">0.58</td>
+                    <td class="has-text-centered"><b style="color:#e67e22">+7%</b></td>
+                  </tr>
+                  <tr>
+                    <td>Shoe&nbsp;Place</td>
+                    <td class="has-text-centered">0.37</td>
+                    <td class="has-text-centered">0.36</td>
+                    <td class="has-text-centered">0.47</td>
+                    <td class="has-text-centered">0.52</td>
+                    <td class="has-text-centered">0.56</td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.59</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.60</b></td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.59</td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.59</td>
+                    <td class="has-text-centered">0.53</td>
+                    <td class="has-text-centered">0.41</td>
+                    <td class="has-text-centered"><b style="color:#e67e22">+23%</b></td>
+                  </tr>
+        
+                  <!-- Group 2: Both Policies Perform Bad -->
+                  <tr>
+                    <td rowspan="2"><em>Both&nbsp;Policies<br>Perform&nbsp;Bad</em></td>
+                    <td>Dual&nbsp;Shoes&nbsp;Place</td>
+                    <td class="has-text-centered">0.08</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.23</b></td>
+                    <td class="has-text-centered">0.19</td>
+                    <td class="has-text-centered">0.17</td>
+                    <td class="has-text-centered">0.19</td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.20</td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.20</td>
+                    <td class="has-text-centered">0.17</td>
+                    <td class="has-text-centered">0.16</td>
+                    <td class="has-text-centered">0.14</td>
+                    <td class="has-text-centered">0.09</td>
+                    <td class="has-text-centered"><b style="color:#e67e22">+0%</b></td>
+                  </tr>
+                  <tr>
+                    <td>Pick&nbsp;Apple&nbsp;Messy</td>
+                    <td class="has-text-centered">0.05</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.26</b></td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.25</td>
+                    <td class="has-text-centered">0.17</td>
+                    <td class="has-text-centered">0.21</td>
+                    <td class="has-text-centered">0.15</td>
+                    <td class="has-text-centered">0.13</td>
+                    <td class="has-text-centered">0.08</td>
+                    <td class="has-text-centered">0.08</td>
+                    <td class="has-text-centered">0.06</td>
+                    <td class="has-text-centered">0.08</td>
+                    <td class="has-text-centered"><b style="color:#e67e22">+0%</b></td>
+                  </tr>
+        
+                  <!-- Group 3: Policy A > Policy B -->
+                  <tr>
+                    <td rowspan="1"><em>Policy&nbsp;A &gt; Policy&nbsp;B</em></td>
+                    <td>Dual&nbsp;Bottles&nbsp;Pick&nbsp;(Easy)</td>
+                    <td class="has-text-centered">0.77</td>
+                    <td class="has-text-centered">0.36</td>
+                    <td class="has-text-centered">0.52</td>
+                    <td class="has-text-centered">0.64</td>
+                    <td class="has-text-centered">0.70</td>
+                    <td class="has-text-centered">0.75</td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.82</td>
+                    <td class="has-text-centered">0.81</td>
+                    <td class="has-text-centered">0.80</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.85</b></td>
+                    <td class="has-text-centered">0.80</td>
+                    <td class="has-text-centered"><b style="color:#e67e22">+8%</b></td>
+                  </tr>
+        
+                  <!-- Group 4: Policy A < Policy B -->
+                  <tr>
+                    <td rowspan="1"><em>Policy&nbsp;A &lt; Policy&nbsp;B</em></td>
+                    <td>Block&nbsp;Hammer&nbsp;Beat</td>
+                    <td class="has-text-centered">0.00</td>
+                    <td class="has-text-centered" style="background-color:#ffe0b2"><b>0.76</b></td>
+                    <td class="has-text-centered" style="background-color:#fff0cc">0.61</td>
+                    <td class="has-text-centered">0.30</td>
+                    <td class="has-text-centered">0.18</td>
+                    <td class="has-text-centered">0.15</td>
+                    <td class="has-text-centered">0.12</td>
+                    <td class="has-text-centered">0.07</td>
+                    <td class="has-text-centered">0.00</td>
+                    <td class="has-text-centered">0.00</td>
+                    <td class="has-text-centered">0.00</td>
+                    <td class="has-text-centered"><b style="color:#e67e22">+0%</b></td>
+                  </tr>
+                </tbody>
+              </table>
+        
+              <!-- Footnote -->
+              <p class="is-size-7 mt-2">
+                <strong>*</strong> The number set {0.1, …, 0.9} denotes the weight of DP<sub>img</sub> (<em>w<sub>1</sub></em>), corresponding to the noise estimation of GPC as 
+                <code>ε̂<sub>M*</sub> = w₁·ε<sub>DP_img</sub> + w₂·ε<sub>DP_pcd</sub></code>.  
+                When w₁ = 0.0 or 1.0, GPC degenerates into DP<sub>pcd</sub> or DP<sub>img</sub>, respectively.
+              </p>
+        
+            </div>
+          </div>
+        </div>
+        
+        <p>
+          Several findings are summarized:
+        </p>
+        <div class="content has-text-justified">
+          <!-- Finding 1 -->
+          <p>
+            <img src="./static/images/mag.png" alt="mag" style="height:0.8em; vertical-align:middle;">
+            <strong>Finding 1:
+            When both policies have moderate accuracy (e.g., &gt;30%), 
+            GPC often achieves higher accuracy under appropriate weight configurations compared to base policies.</strong>
+            <!-- For instance, in the <em>Empty Cup Place</em> task, DP<sub>img</sub> and DP<sub>pcd</sub> achieve 0.42 and 0.62, respectively,
+            while GPC peaks at 0.86 (+24%) with w<sub>1</sub> = 0.4, surpassing both unimodal DPs. -->
+            This improvement reflects the composition of diffusion scores capturing a more generalized distribution that
+            reduces reliance on specific conditions, consistent with the theoretical advantages of compositional models.
+          </p>
+        
+          <!-- Finding 2 -->
+          <p>
+            <img src="./static/images/mag.png" alt="mag" style="height:0.8em; vertical-align:middle;">
+            <strong>Finding 2:
+            When one policy has significantly lower accuracy, GPC struggles to surpass the highest accuracy of the better-performing base policies.</strong>
+            <!-- For example, in the <em>Pick Apple Messy</em> task, DP<sub>pcd</sub> achieves 0.26 and DP<sub>img</sub> only 0.05.
+            GPC peaks at 0.25, falling short of DP<sub>pcd</sub>. -->
+            This suggests that low-accuracy scores from weaker modalities can significantly affect the joint distribution,
+            diminishing the overall performance of the composed policy.
+          </p>
+        
+          <!-- Finding 3 -->
+          <p>
+            <img src="./static/images/mag.png" alt="mag" style="height:0.8em; vertical-align:middle;">
+            <strong>Finding 3:
+            The improvement of GPC is always maximized when the better-performing base policy holds a larger weight in GPC.</strong>
+            <!-- For instance, in <em>Dual Bottles Pick (Easy)</em>, where DP<sub>img</sub> achieves 0.77,
+            GPC reaches 0.85 with w<sub>1</sub> = 0.8, leveraging the stronger DP effectively. -->
+            This highlights the necessity of assigning higher weights to the better-performing distribution to maximize the effectiveness of GPC,
+            guiding the composed policy toward consensus.
+          </p>
+        
+          <p>
+            These findings highlight GPC's versatility in leveraging the strengths of different conditions
+            and the importance of appropriately tuning weights to each policy's performance.
+          </p>
+        </div>
+
+        <br>
+        <h3 class="title is-4">Analysis on GPC's Superiority via Visualization</h3>
+
+
+        <div class="is-vcentered">
+          <img src="./static/images/distribution_vis.png"
+                alt="Overview of TactAR and RDP"
+                style="max-width: 99%; margin: 0 auto;">
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            <strong>Visual Analysis of GPC under Different Compositions.</strong> GPC generalizes across (a) modalities and (b) architectures, with appropriate weighting yielding accurate distributions with better SR than individual policies.
+          </p>
+        </div>     
+      </div>
+    </div>
+    <!--/ Method. -->
+  </div>
+</section>
+
+<!-- TODO: BibTex -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>TBD</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website was built using <a href="https://reactive-diffusion-policy.github.io/">RDP</a>, originally based on the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies Template</a> and <a href="https://transic-robot.github.io/">T<span style="font-variant-caps:all-small-caps;">RANSIC</span></a>. We thank all of them for their contributions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
