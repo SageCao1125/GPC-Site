@@ -1,1 +1,1 @@
-## Website for Reactive Diffusion Policy
+## Website for General Policy Composition
