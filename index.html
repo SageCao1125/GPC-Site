@@ -799,6 +799,140 @@
           </div>
         </div>
         </br>
+
+
+
+          <!-- Visualization of the Sim Experiment. -->
+        <h3 class="title is-4">Visualization of Simulation Results in RoboTwin.</h3>
+
+        <div class="content has-text-justified">
+          <p>
+            <b>Experiemnt Settings:</b>
+            There are three variations and we run 100 trials for each policy for evaluation:
+            <span style="display: block; margin-left: 20px;">(1) Base Diffusion-based VA and VLA Policies (i.e., DP, DP3 and RDT). </span>
+            <span style="display: block; margin-left: 20px;">(2) Composed Policies via GPC. </span>
+          </p>
+        </div> 
+        <h4 class="title is-5" id="peeling experiments">Task: Place Burger Fries (1x)</h4>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/burger/dp_success.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP3 succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/burger/dp3_success.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">RDT fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/burger/rdt_fail.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC (DP+DP3) succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/burger/success_dp-0.1_dp3.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC (RDT+DP) succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/burger/success_rdt-0.2_dp.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC (RDT+DP3) succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/burger/success_rdt-0.5_dp3.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        <h4 class="title is-5" id="peeling experiments">Task: Put Object Cabinet (1x)</h4>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/cabinet/dp_fail.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">DP3 succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/cabinet/dp3_success.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">RDT fails ❌</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/cabinet/rdt_fail.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC (DP+DP3) succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/cabinet/success_dp-0.2_dp3.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC (RDT+DP) succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/cabinet/success_rdt-0.6_dp.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <h4 class="title is-5">GPC (RDT+DP3) succeeds ✅</h4>
+              <video class="small-video" controls muted playsinline height="100%">
+                <source src="./static/videos/sim_robotwin/cabinet/success_rdt-0.4_dp3.mp4"
+                        type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        </br>
+
         <!-- Influence of Weight Configurations on GPC Performance-->
         <h3 class="title is-4">Influence of Weight Configurations on GPC Performance</h3>
         <div class="content has-text-justified">
