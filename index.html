@@ -79,7 +79,10 @@
             <span class="is-size-2">
               Improving Diffusion-based or Flow-based Robot Policies via Test-time Distribution-level Composition
             </span>
-          </h1>          
+          </h1>
+          <div class="is-size-3 publication-conference" style="color: #8b0000; font-weight: bold; margin-top: -10px; margin-bottom: 20px;">
+            ICLR 2026
+          </div>          
           <div class="is-size-5 publication-authors">
             <span class="author-block">
               <a href="https://sagecao1125.github.io/">Jiahang Cao</a><sup>*1,2,3</sup>,
@@ -411,19 +414,18 @@
           </p>
         </div> 
         <div class="columns is-centered">
-          <div class="column is-four-fifths">
-            <div class="table-container">
+          <div class="column is-fullwidth"> <div class="table-container">
               <p class="has-text-centered">
                 <strong>TABLE I: Experiment results on Robomimic and PushT.</strong><br>
                 The table shows the success rate ↑. Our GPC yields a noticeable average improvement compared with the base policies.
               </p>
-        
-              <table class="table is-fullwidth is-bordered is-striped is-hoverable">
+
+              <table class="table is-fullwidth is-bordered is-striped is-hoverable is-narrow">
                 <thead>
                   <tr>
-                    <th>Method</th>
-                    <th>Generative&nbsp;Mode</th>
-                    <th>Model&nbsp;Type</th>
+                    <th style="white-space: nowrap;">Method</th>
+                    <th style="white-space: nowrap;">Generative Mode</th>
+                    <th style="white-space: nowrap;">Model Type</th>
                     <th colspan="3" class="has-text-centered">Robomimic</th>
                     <th class="has-text-centered">PushT</th>
                     <th class="has-text-centered">Average</th>
@@ -437,9 +439,8 @@
                     <th class="has-text-centered">Avg.</th>
                   </tr>
                 </thead>
-        
+
                 <tbody>
-                  <!-- -------- Base Policies -------- -->
                   <tr class="has-text-centered has-background-light">
                     <td colspan="8"><em>Base Policies</em></td>
                   </tr>
@@ -460,7 +461,7 @@
                     <td class="has-text-centered">29.64</td>
                   </tr>
                   <tr>
-                    <td>Flow Policy (FP)</td><td>Flow&nbsp;Matching</td><td>VA</td>
+                    <td>Flow Policy (FP)</td><td style="white-space: nowrap;">Flow Matching</td><td>VA</td>
                     <td class="has-text-centered">95.00</td>
                     <td class="has-text-centered">13.00</td>
                     <td class="has-text-centered">77.50</td>
@@ -468,7 +469,7 @@
                     <td class="has-text-centered">59.94</td>
                   </tr>
                   <tr>
-                    <td>Florence&nbsp;Policy-D</td><td>Diffusion</td><td>VLA</td>
+                    <td>Florence Policy-D</td><td>Diffusion</td><td>VLA</td>
                     <td class="has-text-centered">61.50</td>
                     <td class="has-text-centered">97.00</td>
                     <td class="has-text-centered">46.50</td>
@@ -476,7 +477,7 @@
                     <td class="has-text-centered">61.25</td>
                   </tr>
                   <tr>
-                    <td>Florence&nbsp;Policy-F</td><td>Flow&nbsp;Matching</td><td>VLA</td>
+                    <td>Florence Policy-F</td><td style="white-space: nowrap;">Flow Matching</td><td>VLA</td>
                     <td class="has-text-centered">89.00</td>
                     <td class="has-text-centered">98.50</td>
                     <td class="has-text-centered">88.50</td>
@@ -484,20 +485,19 @@
                     <td class="has-text-centered">78.84</td>
                   </tr>
                   <tr>
-                    <td>π0</td><td>Flow&nbsp;Matching</td><td>VLA</td>
+                    <td>π0</td><td style="white-space: nowrap;">Flow Matching</td><td>VLA</td>
                     <td class="has-text-centered">96.50</td>
                     <td class="has-text-centered">99.00</td>
                     <td class="has-text-centered">92.50</td>
                     <td class="has-text-centered">57.69</td>
                     <td class="has-text-centered">86.42</td>
                   </tr>
-        
-                  <!-- -------- Composed Policies -------- -->
+
                   <tr class="has-text-centered has-background-light">
                     <td colspan="8"><em>Composed Policies via Convex Score Combination</em></td>
                   </tr>
                   <tr>
-                    <td>DP + MP</td><td>Diffusion</td><td>VA&nbsp;&amp;&nbsp;VA</td>
+                    <td>DP + MP</td><td>Diffusion</td><td>VA &amp; VA</td>
                     <td class="has-text-centered">34.50</td>
                     <td class="has-text-centered">99.50</td>
                     <td class="has-text-centered">8.00</td>
@@ -505,7 +505,7 @@
                     <td class="has-text-centered">41.41 <small><b style="color:#e67e22">(+2.22%)</b></small></td>
                   </tr>
                   <tr>
-                    <td>Florence-Policy-D + DP</td><td>Diffusion</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td style="white-space: nowrap;">Florence-Policy-D + DP</td><td>Diffusion</td><td>VLA &amp; VA</td>
                     <td class="has-text-centered">62.50</td>
                     <td class="has-text-centered" style="background-color:#ffe0b2"><b>100.00</b></td>
                     <td class="has-text-centered">61.50</td>
@@ -513,7 +513,7 @@
                     <td class="has-text-centered">66.76 <small><b style="color:#e67e22">(+5.51%)</b></small></td>
                   </tr>
                   <tr>
-                    <td>Florence-Policy-D + MP</td><td>Diffusion</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td style="white-space: nowrap;">Florence-Policy-D + MP</td><td>Diffusion</td><td>VLA &amp; VA</td>
                     <td class="has-text-centered">63.00</td>
                     <td class="has-text-centered" style="background-color:#ffe0b2"><b>100.00</b></td>
                     <td class="has-text-centered">54.50</td>
@@ -521,7 +521,7 @@
                     <td class="has-text-centered">64.60 <small><b style="color:#e67e22">(+3.35%)</b></small></td>
                   </tr>
                   <tr>
-                    <td>Florence-Policy-F + FP</td><td>Flow&nbsp;Matching</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td style="white-space: nowrap;">Florence-Policy-F + FP</td><td style="white-space: nowrap;">Flow Matching</td><td>VLA &amp; VA</td>
                     <td class="has-text-centered">98.50</td>
                     <td class="has-text-centered">98.50</td>
                     <td class="has-text-centered">92.50</td>
@@ -529,7 +529,7 @@
                     <td class="has-text-centered">86.39 <small><b style="color:#e67e22">(+7.55%)</b></small></td>
                   </tr>
                   <tr>
-                    <td>π0 + FP</td><td>Flow&nbsp;Matching</td><td>VLA&nbsp;&amp;&nbsp;VA</td>
+                    <td>π0 + FP</td><td style="white-space: nowrap;">Flow Matching</td><td>VLA &amp; VA</td>
                     <td class="has-text-centered" style="background-color:#ffe0b2"><b>99.50</b></td>
                     <td class="has-text-centered" style="background-color:#ffe0b2"><b>100.00</b></td>
                     <td class="has-text-centered" style="background-color:#ffe0b2"><b>94.00</b></td>
